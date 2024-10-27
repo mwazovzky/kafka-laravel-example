@@ -1,0 +1,14 @@
+[
+    {
+        "name": "ethereum",  
+        "base_currency": "ETH"
+    },
+    {
+        "name": "bitcoin",  
+        "base_currency": "BTC"
+    },
+    {
+        "name": "ripple",  
+        "base_currency": "XRP"
+    }
+]
