@@ -3,6 +3,8 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Enums\UserStatus;
+use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -21,6 +23,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'status',
     ];
 
     /**
@@ -43,6 +46,29 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'status' => UserStatus::class,
         ];
+    }
+
+    public function block(): bool
+    {
+        return $this->update(['status' => UserStatus::BLOCKED]);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function unblock(): bool
+    {
+        if ($this->status == UserStatus::DEACTIVATED) {
+            throw new Exception('User can not be unblocked');
+        }
+
+        return $this->update(['status' => UserStatus::ACTIVE]);
+    }
+
+    public function deactivate(): bool
+    {
+        return $this->update(['status' => UserStatus::DEACTIVATED]);
     }
 }
