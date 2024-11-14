@@ -21,3 +21,4 @@ user-status-updated
 [confluentinc/confluent-kafka-go](https://github.com/confluentinc/confluent-kafka-go/tree/master)
 [librdkafka](https://github.com/confluentinc/librdkafka)
 [rdkafka php extention](https://pecl.php.net/package/rdkafka)
+[mateusjunges/laravel-kafka](https://github.com/mateusjunges/laravel-kafka)
