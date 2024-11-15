@@ -2,11 +2,14 @@
 
 namespace App\Providers;
 
+use App\Serializers\DeserializerBuilder;
 use App\Serializers\SerializerBuilder;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
+use Junges\Kafka\Consumers\Builder as KafkaConsumersBuilder;
+use Junges\Kafka\Contracts\ConsumerBuilder;
 use Junges\Kafka\Contracts\MessageProducer;
 use Junges\Kafka\Producers\Builder as KafkaProducerBuilder;
 
@@ -29,9 +32,32 @@ class KafkaServiceProvider extends ServiceProvider
                 ]);
             });
 
+        $this->app->when(DeserializerBuilder::class)
+            ->needs(ClientInterface::class)
+            ->give(function () {
+                return new Client([
+                    'base_uri' => config('kafka.schema_registry.host'),
+                    'auth' => [
+                        config('kafka.schema_registry.username'),
+                        config('kafka.schema_registry.password'),
+                    ],
+                ]);
+            });
+
         $this->app->bind(MessageProducer::class, function () {
             return KafkaProducerBuilder::create(
                 broker: config('kafka.brokers'),
+            )->withSasl(
+                username: config('kafka.sasl.username'),
+                password: config('kafka.sasl.password'),
+                mechanisms: config('kafka.sasl.mechanisms'),
+                securityProtocol: config('kafka.securityProtocol'),
+            );
+        });
+
+        $this->app->bind(ConsumerBuilder::class, function () {
+            return KafkaConsumersBuilder::create(
+                brokers: config('kafka.brokers'),
             )->withSasl(
                 username: config('kafka.sasl.username'),
                 password: config('kafka.sasl.password'),
